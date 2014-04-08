@@ -5,8 +5,8 @@
 
 global
 {
-  width		800
-  height	800
+  width		1000
+  height	1000
   l_color	4242ff
   l_intensity	50
 }

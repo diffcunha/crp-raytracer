@@ -5,10 +5,11 @@ group
 #  rot		0 -20 0
 #  coords	-30 -10 0
 }
+
 global
 {
-  width		1024
-  height	768
+  width		1000
+  height	1000
   distscreen	1000
   highdef	0.25
 }

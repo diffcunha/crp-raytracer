@@ -1,7 +1,9 @@
 var scene, textures_remaining,
 __slice = [].slice;
 
-self.copy = function(obj) {
+var self = {};
+
+function copy(obj) {
   if(Array.isArray(obj)) {
     return obj.slice();
   } else if (obj instanceof Object && !(obj instanceof Function)) {
@@ -437,7 +439,7 @@ this.noise = function(x, y, z) {
     return x;
   };
 
-  self.perlin = function(pos, id, persistence, octaves, frequence) {
+  function perlin(pos, id, persistence, octaves, frequence) {
     var amplitude, frequency, i, noise, _i;
     pos = vec3.scale(pos, frequence, vec3.create());
     noise = 0;
@@ -515,8 +517,8 @@ function render(scene) {
     }
   }
   /* Items */
-  for(var j = 0; j < scene.item.length; j++) {
-    var item = scene.item[j];
+  for(var i = 0; i < scene.item.length; i++) {
+    var item = scene.item[i];
 
     if(item.color == null) {
       item.color = [1, 1, 1];
@@ -540,10 +542,10 @@ function render(scene) {
     if(item.limits == null) {
       item.limits = [0, 0, 0, 0, 0, 0];
     }
-    for(var i = 0; i < 3; i++) {
-      if(item.limits[2 * i] >= item.limits[2 * i + 1]) {
-        item.limits[2 * i] = -Infinity;
-        item.limits[2 * i + 1] = Infinity;
+    for(var j = 0; j < 3; j++) {
+      if(item.limits[2 * j] >= item.limits[2 * j + 1]) {
+        item.limits[2 * j] = -Infinity;
+        item.limits[2 * j + 1] = Infinity;
       }
     }
     if(item.pnoise == null) {
@@ -603,8 +605,8 @@ function render(scene) {
     if (!(group.id in groups)) {
       continue;
     }
-    for(var i = 0; i < groups[group.id].length; i++) {
-      var item_raw = groups[group.id][i];
+    for(var j = 0; j < groups[group.id].length; j++) {
+      var item_raw = groups[group.id][j];
       var item = copy(item_raw);
       delete item.group_id;
       var t = mat4.create(group.transform);
