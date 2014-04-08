@@ -3,9 +3,8 @@ var Png = require('png').Png;
 var Buffer = require('buffer').Buffer;
 var Parser = require('./parser').Parser;
 
-var CrowdProcess = require('CrowdProcess')({
-    "token": "19575cb6-5ec2-4143-865a-71d26813f0da"
-});
+var credentials = require('./credentials');
+var CrowdProcess = require('CrowdProcess')(credentials);
 
 if(process.argv.length < 5) {
     console.error("use: node . <n_units> <rt_file_in> <png_file_out>");
