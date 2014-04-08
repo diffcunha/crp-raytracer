@@ -86,10 +86,3 @@ job.on('end', onEnd);
 job.on('error', function(err) {
   console.error(err);
 });
-=======
-
-job.on('end', function() {
-	console.log('got all results!');
-	var png = new Png(rgb, scene.global.width, scene.global.height, 'rgb');
-	fs.writeFileSync(process.argv[4], png.encodeSync().toString('binary'), 'binary');
-});
