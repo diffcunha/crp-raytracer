@@ -34,3 +34,5 @@ browserify -t brfs ./web-app/browser.js -o ./web-app/bundle.js
 There is an encoding issue at line 3589 of bundle js, rewrite ` && ` from the keyboard.
 
 # Credits
+
+Big inspiration from the work of [Christopher Chedeau aka Vjeux](http://blog.vjeux.com/) you can find here [jsRayTracer](https://github.com/vjeux/jsRayTracer). Thanks!
