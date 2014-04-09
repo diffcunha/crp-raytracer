@@ -26,8 +26,5 @@ node . 50 ./examples/pokeball_scene.json out.png
 ````
 `50` represents the size of the square that is sent to each browsers.
 
-# Interesting related projects:
-[sketchfab](https://sketchfab.com/)
-[clara.io](http://clara.io/)
 
 # Credits
