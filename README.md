@@ -26,5 +26,11 @@ node . 50 ./examples/pokeball_scene.json out.png
 ````
 `50` represents the size of the square that is sent to each browsers.
 
+# Browserifiy it
+````
+npm install -g browserify brfs
+browserify -t brfs ./web-app/browser.js -o ./web-app/bundle.js
+````
+There is an encoding issue at line 3589 of bundle js, rewrite ` && ` from the keyboard.
 
 # Credits
