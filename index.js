@@ -1,7 +1,7 @@
-var png = require('./lib/png.js');
-var RayTracer = require('./lib/RayTracer.js');
 var fs = require('fs');
-var Parser = require('./lib/parser').Parser;
+var Png = require('png').Png;
+
+var RayTracer = require('./lib/RayTracer.js');
 
 if(process.argv.length < 5) {
     console.error("use: node . <n_units> <rt_file_in> <png_file_out>");
@@ -9,18 +9,21 @@ if(process.argv.length < 5) {
 }
 
 /* Number of units */
-var n = process.argv[2];
-console.log("# units: " + n  + " x " + n + " = " + n * n);
+var split = process.argv[2];
+console.log("# units: " + split  + " x " + split + " = " + split * split);
 
 var scene_file = process.argv[3];
 var input = fs.readFileSync(scene_file, 'utf8');
-var scene = new Parser(input).parse();
 
-ray_tracer = new RayTracer(n, scene);
+var rayTracer = new RayTracer({
+	split: split,
+	input: input,
+	mock: false
+});
 
-onEnd = function() {
-    console.log('got all results!');
-    png.write_file(this.rgb, this.scene, process.argv[4]);
-}
+rayTracer.on('end', function(result) {
+	var png = new Png(result.data, result.width, result.height, 'rgb');
+  fs.writeFileSync(process.argv[4], png.encodeSync().toString('binary'), 'binary');
+});
 
-ray_tracer.crpStart(onEnd.bind(ray_tracer));
+rayTracer.run();
