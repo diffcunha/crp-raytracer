@@ -14,9 +14,9 @@ var scene_file = process.argv[3];
 
 ray_tracer = new RayTracer(n, scene_file);
 
-ray_tracer.onEnd = function() {
+onEnd = function() {
     console.log('got all results!');
     png.write_file(this.rgb, this.scene, process.argv[4]);
 }
 
-ray_tracer.crpStart();
+ray_tracer.crpStart(onEnd.bind(ray_tracer));
