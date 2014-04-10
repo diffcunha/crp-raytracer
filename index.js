@@ -1,29 +1,101 @@
 var fs = require('fs');
-var Png = require('png').Png;
+var events = require('events');
+var Buffer = require('buffer').Buffer;
 
-var RayTracer = require('./lib/RayTracer.js');
+var credentials = require('./credentials');
+var CrowdProcess = require('CrowdProcess')(credentials);
 
-if(process.argv.length < 5) {
-    console.error("use: node . <n_units> <rt_file_in> <png_file_out>");
-    process.exit(0);
+var Parser = require('./src/parser').Parser;
+
+module.exports = RayTracer;
+
+function RayTracer(opts) {
+    events.EventEmitter.call(this);
+
+    /* Validation */
+    if(opts.input == undefined) {
+        throw "Invalid input";
+    }
+
+    var self = this;
+
+    /* Default params */
+    var split = opts.split || 10;
+    var mock = opts.mock || false;
+
+    /* Parse input */
+    var scene = new Parser(opts.input).parse();
+
+    /* Prepare program */
+    var program = fs.readFileSync('./src/program.js', 'utf8').replace("%%SCENE%%", JSON.stringify(scene));
+    
+    /* Setup result */
+    var rgb = new Buffer(scene.global.width * scene.global.height * 3);
+    
+    /* Prepare data */
+    var data = [];
+
+    /*
+     * TODO: Improve to allow any scene size.
+     * Currently it only allows dimensions divisible by split
+     */
+    var id = 0;
+    for(var i = 0; i < split; i++) {
+        for(var j = 0; j < split; j++) {
+            data.push({
+                "id": id++,
+                "begin_x": (scene.global.height / split) * j,
+                "end_x": (scene.global.height / split) * (j + 1),
+                "begin_y": (scene.global.width / split) * i,
+                "end_y": (scene.global.width / split) * (i + 1),
+            });
+        }
+    }
+    
+    /* Handlers */
+    function onData(result) {
+        var unit = data[result.id];
+        var i = 0;
+        for(var y = unit.begin_y; y < unit.end_y; y++) {
+            for(var x = unit.begin_x; x < unit.end_x; x++) {
+              var z = (x * scene.global.width + y) * 3;
+              rgb[z] = result.data[i++];
+              rgb[z+1] = result.data[i++];
+              rgb[z+2] = result.data[i++];
+            }
+        }
+    }
+    function onEnd() {
+        console.log('got all results!');
+        self.emit('end', {
+            width: scene.global.width,
+            height: scene.global.height,
+            data: rgb
+        });
+    }
+    
+    /* */
+    this.run = function run() {
+        if(mock) {
+            (function() {
+                eval(program);
+                for(var i = 0; i < split * split; i++) {
+                    onData(Run(data[i]));
+                }
+                onEnd();
+            })();
+        } else {
+            var job = CrowdProcess({
+                data: data,
+                program: program
+            });
+            job.on('data', onData);
+            job.on('end', onEnd);
+            job.on('error', function(err) {
+                console.error(err);
+            });
+        }
+    }
 }
 
-/* Number of units */
-var split = process.argv[2];
-console.log("# units: " + split  + " x " + split + " = " + split * split);
-
-var scene_file = process.argv[3];
-var input = fs.readFileSync(scene_file, 'utf8');
-
-var rayTracer = new RayTracer({
-	split: split,
-	input: input,
-	mock: false
-});
-
-rayTracer.on('end', function(result) {
-	var png = new Png(result.data, result.width, result.height, 'rgb');
-  fs.writeFileSync(process.argv[4], png.encodeSync().toString('binary'), 'binary');
-});
-
-rayTracer.run();
+RayTracer.prototype.__proto__ = events.EventEmitter.prototype;
