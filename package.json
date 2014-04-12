@@ -9,7 +9,6 @@
   "author": "@diffcunha",
   "license": "GPL",
   "dependencies": {
-    "crowdprocess": "~0.5.11",
-    "png": "~3.0.3"
+    "crowdprocess": "~0.5.11"
   }
 }
