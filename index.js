@@ -64,6 +64,13 @@ function RayTracer(opts) {
               rgb[z+2] = result.data[i++];
             }
         }
+        self.emit('data', {
+            begin_x: unit.begin_x,
+            end_x: unit.end_x,
+            begin_y: unit.begin_y,
+            end_y: unit.end_y,
+            data: result.data
+        });
     }
     function onEnd() {
         console.log('got all results!');
@@ -74,8 +81,12 @@ function RayTracer(opts) {
         });
     }
     
-    /* */
+    /* Operations */
     this.run = function run() {
+        self.emit('run', {
+            width: scene.global.width,
+            height: scene.global.height
+        });
         if(mock) {
             (function() {
                 eval(program);
