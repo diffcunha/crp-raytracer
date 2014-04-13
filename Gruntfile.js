@@ -66,15 +66,15 @@ module.exports = function (grunt) {
         },
 
         browserify: {
-          dist: {
-            files: {
-              '<%= config.app %>/scripts/crp.js': ['src/crp-raytracer.js'],
-            },
-            options: {
-              transform: ['brfs'],
-              watch: true
+            dist: {
+                files: {
+                    '<%= config.app %>/scripts/crp.js': ['src/crp-raytracer.js'],
+                },
+                options: {
+                      transform: ['brfs'],
+                      watch: true
+                }
             }
-          }
         },
 
         // The actual grunt server settings
