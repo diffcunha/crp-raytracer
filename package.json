@@ -6,7 +6,7 @@
     "bower": "^1.3.2",
     "brfs": "^1.0.1",
     "crowdprocess": "~0.5.11",
-    "crp-raytracer": "0.0.1",
+    "crp-raytracer": "git://github.com/crp-nheiro/crp-raytracer.git",
     "grunt": "~0.4.0",
     "grunt-autoprefixer": "~0.5.0",
     "grunt-bower-install": "~1.0.0",
