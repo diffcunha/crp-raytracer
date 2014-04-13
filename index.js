@@ -26,7 +26,7 @@ function RayTracer(opts) {
     var scene = new Parser(opts.input).parse();
 
     /* Prepare program */
-    var program = fs.readFileSync('./src/program.js', 'utf8').replace("%%SCENE%%", JSON.stringify(scene));
+    var program = fs.readFileSync(__dirname + '/src/program.js', 'utf8').replace("%%SCENE%%", JSON.stringify(scene));
     
     /* Setup result */
     var rgb = new Buffer(scene.global.width * scene.global.height * 3);
