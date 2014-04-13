@@ -1,4 +1,4 @@
-var credentials = require('./credentials');
+var credentials = require('../credentials');
 var RayTracer = require('crp-raytracer');
 
 /* Number of units */
