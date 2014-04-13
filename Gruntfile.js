@@ -71,8 +71,8 @@ module.exports = function (grunt) {
                     '<%= config.app %>/build/crp.js': ['src/crp-raytracer.js'],
                 },
                 options: {
-                      transform: ['brfs'],
-                      watch: true
+                    watch: true,
+                    transform: [['brfs', {global: true}]]
                 }
             }
         },
