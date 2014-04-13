@@ -2,14 +2,13 @@ var fs = require('fs');
 var events = require('events');
 var Buffer = require('buffer').Buffer;
 
-var credentials = require('./credentials');
-var CrowdProcess = require('CrowdProcess')(credentials);
-
 var Parser = require('./src/parser').Parser;
 
 module.exports = RayTracer;
 
 function RayTracer(opts) {
+    var CrowdProcess = require('CrowdProcess')(opts.credentials);
+    
     events.EventEmitter.call(this);
 
     /* Validation */

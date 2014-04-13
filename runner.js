@@ -1,6 +1,7 @@
 var fs = require('fs');
 var Png = require('png').Png;
 
+var credentials = require('./credentials');
 var RayTracer = require('./index.js');
 
 if(process.argv.length < 5) {
@@ -18,6 +19,7 @@ var input = fs.readFileSync(scene_file, 'utf8');
 var rayTracer = new RayTracer({
 	split: split,
 	input: input,
+  credentials: credentials,
 	mock: false
 });
 
