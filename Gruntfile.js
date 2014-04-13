@@ -68,7 +68,7 @@ module.exports = function (grunt) {
         browserify: {
             dist: {
                 files: {
-                    '<%= config.app %>/scripts/crp.js': ['src/crp-raytracer.js'],
+                    '<%= config.app %>/build/crp.js': ['src/crp-raytracer.js'],
                 },
                 options: {
                       transform: ['brfs'],
