@@ -9,11 +9,12 @@ var canvas = $('canvas')[0];
 var context = canvas.getContext('2d');
 var canvasData;
 
+
 editor = CodeMirror.fromTextArea($('textarea')[0], {
   lineNumbers: true
 });
 
-$('#crp').click(function() {
+$('#start-rendering').click(function() {
   var t;
   // if (rayTracer) rayTracer.terminate();
   var rgb;
