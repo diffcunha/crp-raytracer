@@ -60,7 +60,7 @@ module.exports = function (grunt) {
                 ]
             },
             browserify: {
-                files: 'src/crp-raytracer.js',
+                files: ['Gruntfile.js', 'src/crp-raytracer.js'],
                 tasks: 'browserify'
             }
         },
