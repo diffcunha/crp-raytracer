@@ -71,10 +71,12 @@
             </div>
             <div class="row">
                 <div class="col-md-6 col-sm-6">
-                    <img class="img-responsive img-square" src="http://placehold.it/400x300" alt="TODO">
+                    <canvas></canvas>
+                    <center>time:<span id="time-browser"></span></center>
                 </div>
                 <div class="col-md-6 col-sm-6">
-                    <img class="img-responsive img-square" src="http://placehold.it/400x300" alt="TODO">
+                    <canvas></canvas>
+                    <center>time:<span id="time-crp"></span></center>
                 </div>
             </div>
             <div class="row">
@@ -220,7 +222,8 @@
         <!-- endbuild -->
 
         <!-- build:js({app,.tmp}) scripts/main.js -->
-        <script src="scripts/main.js"></script>
+        <script src="src/trace.js"></script>
+        <script src="build/crp.js"></script>
         <!-- endbuild -->
 </body>
 </html>

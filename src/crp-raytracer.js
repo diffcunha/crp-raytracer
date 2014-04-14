@@ -1,61 +1,62 @@
+var fs = require('fs');
 var credentials = require('../credentials');
 var RayTracer = require('crp-raytracer');
+var Parser = require('../node_modules/crp-raytracer/src/parser').Parser;
 
 /* Number of units */
-var split = 10;
+var split = 50;
 console.log("# units: " + split  + " x " + split + " = " + split * split);
 
-var canvas = $('canvas')[0];
-var context = canvas.getContext('2d');
-var canvasData;
+var canvasCrp = $('canvas')[1];
+var contextCrp = canvasCrp.getContext('2d');
+var canvasCrpData;
 
-
-editor = CodeMirror.fromTextArea($('textarea')[0], {
-  lineNumbers: true
-});
+var input = fs.readFileSync('./app/examples/pokeball.rt', 'utf8');
+var scene = new Parser(input).parse();
 
 $('#start-rendering').click(function() {
   var t;
-  // if (rayTracer) rayTracer.terminate();
   var rgb;
   var width;
   var height;
 
   rayTracer = new RayTracer({
     split: split,
-    input: editor.getValue(),
+    input: input,
     credentials: credentials
   });
-  t = +new Date();
+  
+  timeCrp = +new Date();
 
   rayTracer.on('run', function(result) {
     width = result.width;
     height = result.height;
-
     canvas.width = width;
     canvas.height = height;
-    canvasData = context.getImageData(0, 0, width, height);
+    canvasCrpData = contextCrp.getImageData(0, 0, width, height);
   });
   
   rayTracer.on('data', function(result) {
-    // console.log('test');
     var i = 0;
     for(var y = result.begin_y; y < result.end_y; y++) {
       for(var x = result.begin_x; x < result.end_x; x++) {
         var z = (x * width + y) * 4;
-        canvasData.data[z] = result.data[i++];
-        canvasData.data[z+1] = result.data[i++];
-        canvasData.data[z+2] = result.data[i++];
-        canvasData.data[z+3] = 255;
+        canvasCrpData.data[z] = result.data[i++];
+        canvasCrpData.data[z+1] = result.data[i++];
+        canvasCrpData.data[z+2] = result.data[i++];
+        canvasCrpData.data[z+3] = 255;
       }
     }
-    context.putImageData(canvasData, 0, 0);
+    context.putImageData(canvasCrpData, 0, 0);
   });
 
   rayTracer.on('end', function(){
     console.log('end');
-    $('#time').html(Math.round((+new Date() - t) / 1000) + 's');
+    $('#time-crp').html(Math.round((+new Date() - timeCrp) / 1000) + 's');
   })
 
   rayTracer.run();
+
+  //In the Browser
+  traceBrowser(input);
 });
