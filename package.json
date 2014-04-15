@@ -1,6 +1,6 @@
 {
   "name": "crp-raytracer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Distributed raytracer using crowdprocess",
   "main": "index.js",
   "scripts": {
