@@ -5,9 +5,11 @@ var credentials = require('./credentials');
 var RayTracer = require('./index.js');
 
 if(process.argv.length < 5) {
-    console.error("use: node . <n_units> <rt_file_in> <png_file_out>");
+    console.error("use: node . <n_units> <rt_file_in> <png_file_out> [mock]");
     process.exit(0);
 }
+
+var mock = process.argv[5] ? true : false;
 
 /* Number of units */
 var split = process.argv[2];
@@ -20,7 +22,7 @@ var rayTracer = new RayTracer({
 	split: split,
 	input: input,
   credentials: credentials,
-	mock: false
+	mock: mock
 });
 
 // var rgb;

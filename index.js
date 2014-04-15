@@ -6,14 +6,15 @@ var Parser = require('./src/parser').Parser;
 
 module.exports = RayTracer;
 
-function RayTracer(opts) {
-    var CrowdProcess = require('CrowdProcess')(opts.credentials);
-    
+function RayTracer(opts) {    
     events.EventEmitter.call(this);
 
     /* Validation */
     if(opts.input == undefined) {
         throw "Invalid input";
+    }
+    if(!opts.mock && opts.credentials == undefined) {
+         throw "Invalid credentials";
     }
 
     var self = this;
@@ -95,6 +96,7 @@ function RayTracer(opts) {
                 onEnd();
             })();
         } else {
+            var CrowdProcess = require('CrowdProcess')(opts.credentials);
             var job = CrowdProcess({
                 data: data,
                 program: program
