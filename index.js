@@ -35,19 +35,22 @@ function RayTracer(opts) {
     /* Prepare data */
     var data = [];
 
-    /*
-     * TODO: Improve to allow any scene size.
-     * Currently it only allows dimensions divisible by split
-     */
+    /* Calculate jobs sizes */
+    var jobWidth = Math.floor(scene.global.width / split);
+    var splitWidth = Math.ceil(scene.global.width / jobWidth);
+    
+    var jobHeight = Math.floor(scene.global.height / split);
+    var splitHeight = Math.ceil(scene.global.height / jobHeight);
+
     var id = 0;
-    for(var i = 0; i < split; i++) {
-        for(var j = 0; j < split; j++) {
+    for(var i = 0; i < splitWidth; i++) {
+        for(var j = 0; j < splitHeight; j++) {
             data.push({
                 "id": id++,
-                "begin_x": (scene.global.height / split) * j,
-                "end_x": (scene.global.height / split) * (j + 1),
-                "begin_y": (scene.global.width / split) * i,
-                "end_y": (scene.global.width / split) * (i + 1),
+                "begin_x": jobHeight * j,
+                "end_x": j < splitHeight - 1 ? jobHeight * (j + 1) : scene.global.height,
+                "begin_y": jobWidth * i,
+                "end_y": i < splitWidth - 1 ? jobWidth * (i + 1) : scene.global.width
             });
         }
     }
