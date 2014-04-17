@@ -223,6 +223,7 @@
           postMessage(result);
         }
       }
+      postMessage(['end']);
     }
   };
 
