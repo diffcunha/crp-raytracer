@@ -469,7 +469,7 @@ var perlin;
 scene = null;
 self.textures = {};
 
-function render(scene) {
+function render(scene, animation) {
   self.scene = scene;
 
   if(scene.global.highdef == null) {
@@ -498,7 +498,13 @@ function render(scene) {
   scene.global.l_intensity = (scene.global.l_intensity != null ? scene.global.l_intensity : 0) / 100;
   vec3.scale(scene.global.l_color, scene.global.l_intensity);
 
-  scene.eye.rot = vec3.scale(scene.eye.rot != null ? scene.eye.rot : [0, 0, 0], Math.PI / 180);
+  if(animation) {
+    var theta = (2 * Math.PI * animation.frame) / animation.frames;
+    scene.eye.coords = [400 * Math.cos(-(Math.PI - theta)), 400 * Math.sin(-(Math.PI - theta)), 0];
+    scene.eye.rot = [0, 0, theta];
+  } else {
+    scene.eye.rot = vec3.scale(scene.eye.rot != null ? scene.eye.rot : [0, 0, 0], Math.PI / 180);
+  }
 
   scene.global.W = scene.global.width * scene.global.upscale;
   scene.global.H = scene.global.height * scene.global.upscale;
@@ -656,6 +662,7 @@ function Run(d) {
   scene.job = d;
   return {
     id: d.id,
-    data: render(scene)
+    animation: d.animation,
+    data: render(scene, d.animation)
   };    
 }

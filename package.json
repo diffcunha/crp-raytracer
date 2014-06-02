@@ -9,6 +9,7 @@
   "author": "@diffcunha",
   "license": "GPL",
   "dependencies": {
-    "crowdprocess": "~0.5.11"
+    "crowdprocess": "*",
+    "crp-stream-client": "*"
   }
 }
