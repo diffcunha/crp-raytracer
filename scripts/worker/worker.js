@@ -36,8 +36,11 @@
   this.onmessage = function(_arg) {
     var color, content, group, groups, i, id, input, item, item_raw, light, name, portals, result, size, t, two_portals, type, value, x, y, _base, _base1, _base2, _base3, _base4, _base5, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _n, _name, _o, _p, _ref, _ref1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9, _results;
     _ref = _arg.data, type = _ref[0], value = _ref[1];
+    
     if (type === 'process') {
       input = value.input;
+      var animation = value.animation;
+
       self.scene = scene = new Parser(input).parse();
       if ((_base = scene.global).highdef == null) {
         _base.highdef = [];
@@ -60,7 +63,15 @@
       }
       scene.global.l_intensity = ((_ref2 = scene.global.l_intensity) != null ? _ref2 : 0) / 100;
       vec3.scale(scene.global.l_color, scene.global.l_intensity);
-      scene.eye.rot = vec3.scale((_ref3 = scene.eye.rot) != null ? _ref3 : [0, 0, 0], Math.PI / 180);
+
+      if(animation) {
+        var theta = (2 * Math.PI * animation.frame) / animation.frames;
+        scene.eye.coords = [400 * Math.cos(-(Math.PI - theta)), 400 * Math.sin(-(Math.PI - theta)), 0];
+        scene.eye.rot = [0, 0, theta];
+      } else {
+        scene.eye.rot = vec3.scale((_ref3 = scene.eye.rot) != null ? _ref3 : [0, 0, 0], Math.PI / 180);
+      }
+
       scene.global.W = scene.global.width * scene.global.upscale;
       scene.global.H = scene.global.height * scene.global.upscale;
       postMessage([
