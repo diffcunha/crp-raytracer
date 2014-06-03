@@ -1,8 +1,10 @@
+'use strict'
+
 var fs = require('fs');
 var events = require('events');
-//var Buffer = require('buffer').Buffer;
 
 var Parser = require('./src/parser').Parser;
+var CrowdProcess = require('./crp-client.js');
 
 module.exports = RayTracer;
 
@@ -11,10 +13,10 @@ function RayTracer(opts) {
 
     /* Validation */
     if(opts.input == undefined) {
-        throw "Invalid input";
+        throw 'Invalid input';
     }
     if(!opts.mock && opts.credentials == undefined) {
-         throw "Invalid credentials";
+         throw 'Invalid credentials';
     }
 
     var self = this;
@@ -24,13 +26,11 @@ function RayTracer(opts) {
     var mock = opts.mock || false;
     var animation = opts.animation || false;
 
-    var CrowdProcess = require('CrowdProcess')(opts.credentials);
-
     /* Parse input */
     var scene = new Parser(opts.input).parse();
 
     /* Prepare program */
-    var program = fs.readFileSync(__dirname + '/src/program.js', 'utf8').replace("%%SCENE%%", JSON.stringify(scene));
+    var program = fs.readFileSync(__dirname + '/src/program.js', 'utf8').replace('%%SCENE%%', JSON.stringify(scene));
     
     /* Setup result */
     // var rgb = new Buffer(scene.global.width * scene.global.height * 3);
@@ -44,6 +44,39 @@ function RayTracer(opts) {
     
     var jobHeight = Math.floor(scene.global.height / split);
     var splitHeight = Math.ceil(scene.global.height / jobHeight);
+
+    var id = 0;
+    if(animation) {
+        for(var frame = 0; frame < animation.frames; frame++) {
+            for(var i = 0; i < splitWidth; i++) {
+                for(var j = 0; j < splitHeight; j++) {
+                    data.push({
+                        'id': id++,
+                        'animation': {
+                            'frame': frame,
+                            'frames': animation.frames
+                        },
+                        'begin_x': jobHeight * j,
+                        'end_x': j < splitHeight - 1 ? jobHeight * (j + 1) : scene.global.height,
+                        'begin_y': jobWidth * i,
+                        'end_y': i < splitWidth - 1 ? jobWidth * (i + 1) : scene.global.width
+                    });
+                }
+            }
+        }
+    } else {
+        for(var i = 0; i < splitWidth; i++) {
+            for(var j = 0; j < splitHeight; j++) {
+                data.push({
+                    'id': id++,
+                    'begin_x': jobHeight * j,
+                    'end_x': j < splitHeight - 1 ? jobHeight * (j + 1) : scene.global.height,
+                    'begin_y': jobWidth * i,
+                    'end_y': i < splitWidth - 1 ? jobWidth * (i + 1) : scene.global.width
+                });
+            }
+        }
+    }
     
     /* Handlers */
     function onData(result) {
@@ -65,15 +98,17 @@ function RayTracer(opts) {
             animation: result.animation,
             data: result.data
         });
-        //delete result.data;
     }
     function onEnd() {
-        console.log('got all results!');
+        // console.log('got all results!');
         self.emit('end', {
             width: scene.global.width,
-            height: scene.global.height,
+            height: scene.global.height
             //data: rgb
         });
+    }
+    function onError(error) {
+        self.emit('error', error);
     }
     
     /* Operations */
@@ -83,6 +118,9 @@ function RayTracer(opts) {
             height: scene.global.height,
             splitsPerFrame: splitWidth * splitHeight
         });
+
+        var crp = new CrowdProcess(opts.credentials.token, program, data, onData, onEnd, onError);
+/*
         if(mock) {
             (function() {
                 eval(program);
@@ -93,52 +131,14 @@ function RayTracer(opts) {
             })();
         } else {
             var job = CrowdProcess({
-                //data: data,
+                data: data,
                 program: program
             });
             job.on('data', onData);
             job.on('end', onEnd);
-            job.on('error', function(err) {
-                console.error(err);
-            });
-
-            var id = 0;
-            if(animation) {
-                for(var frame = 0; frame < animation.frames; frame++) {
-                    for(var i = 0; i < splitWidth; i++) {
-                        for(var j = 0; j < splitHeight; j++) {
-                            job.write({
-                                "id": id++,
-                                "animation": {
-                                    "frame": frame,
-                                    "frames": animation.frames
-                                },
-                                "begin_x": jobHeight * j,
-                                "end_x": j < splitHeight - 1 ? jobHeight * (j + 1) : scene.global.height,
-                                "begin_y": jobWidth * i,
-                                "end_y": i < splitWidth - 1 ? jobWidth * (i + 1) : scene.global.width
-                            });
-                        }
-                    }
-                }
-            } else {
-                for(var i = 0; i < splitWidth; i++) {
-                    for(var j = 0; j < splitHeight; j++) {
-                        job.write({
-                            "id": id++,
-                            "begin_x": jobHeight * j,
-                            "end_x": j < splitHeight - 1 ? jobHeight * (j + 1) : scene.global.height,
-                            "begin_y": jobWidth * i,
-                            "end_y": i < splitWidth - 1 ? jobWidth * (i + 1) : scene.global.width
-                        });
-                    }
-                }
-            }
-
-            job.end();
-            job.inRStream.end();
-
+            job.on('error', onError);
         }
+*/
     }
 }
 
