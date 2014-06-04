@@ -79,26 +79,7 @@ function RayTracer(opts) {
     }
     
     /* Handlers */
-    function onData(result) {
-        var unit = data[result.id];
-        // var i = 0;
-        // for(var y = unit.begin_y; y < unit.end_y; y++) {
-        //     for(var x = unit.begin_x; x < unit.end_x; x++) {
-        //       var z = (x * scene.global.width + y) * 3;
-        //       rgb[z] = result.data[i++];
-        //       rgb[z+1] = result.data[i++];
-        //       rgb[z+2] = result.data[i++];
-        //     }
-        // }
-        self.emit('data', {
-            begin_x: unit.begin_x,
-            end_x: unit.end_x,
-            begin_y: unit.begin_y,
-            end_y: unit.end_y,
-            animation: result.animation,
-            data: result.data
-        });
-    }
+    
     function onEnd() {
         // console.log('got all results!');
         self.emit('end', {
@@ -112,13 +93,24 @@ function RayTracer(opts) {
     }
     
     /* Operations */
-    this.run = function run() {
+    this.run = function run(dataCB) {
         self.emit('run', {
             width: scene.global.width,
             height: scene.global.height,
             splitsPerFrame: splitWidth * splitHeight
         });
 
+        function onData(result) {
+            var unit = data[result.id];
+            dataCB({
+                begin_x: unit.begin_x,
+                end_x: unit.end_x,
+                begin_y: unit.begin_y,
+                end_y: unit.end_y,
+                animation: unit.animation,
+                data: result.data
+            });
+        }
         var crp = new CrowdProcess(opts.credentials.token, program, data, onData, onEnd, onError);
 /*
         if(mock) {

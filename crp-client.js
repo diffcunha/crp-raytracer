@@ -85,12 +85,10 @@ function CrowdProcess(token, program, data, onData, onEnd, onError) {
         xhr.setRequestHeader("Authorization", "Token " + token);
         xhr.seenBytes = 0;
 
-        xhr.onreadystatechange = function handle() {
-            // if(xhr.readyState == 2) {
-            //     if(cb) {
-            //         cb();
-            //     }
-            // }
+        var timer = setInterval(handle, 300);
+
+        // xhr.onreadystatechange =
+        function handle() {
             if(xhr.readyState > 2) {
                 var newData = xhr.responseText.substr(xhr.seenBytes);
                 /*
@@ -105,9 +103,8 @@ function CrowdProcess(token, program, data, onData, onEnd, onError) {
                     xhr.seenBytes += lastIndex; 
                 }
                 */
-                for(var begin = 0, end = newData.indexOf('\n'); end > 0; end = newData.indexOf('\n', begin)) {
-                    end++; // include '\n'
-                    var data = newData.substring(begin, end);
+                for(var begin = 0, end = newData.indexOf('\n') + 1; end > 0; end = newData.indexOf('\n', begin) + 1) {
+                    var data = newData.substr(begin, end - begin);
                     onData(JSON.parse(data));
                     nTasks--;
                     xhr.seenBytes += end - begin;
@@ -116,6 +113,7 @@ function CrowdProcess(token, program, data, onData, onEnd, onError) {
             }
             if(nTasks == 0) {
                 xhr.abort();
+                clearInterval(timer);
                 if(onEnd) {
                     onEnd();
                 }

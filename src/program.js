@@ -644,16 +644,30 @@ function render(scene, animation) {
   }
 
   /* Render */
-  var result = []
+  var result = ''; // []
   for(var y = scene.job.begin_y; y < scene.job.end_y; y++) {
     for(var x = scene.job.begin_x; x < scene.job.end_x; x++) {
       var color = process(y, x, scene.global.upscale, scene.global.randomRays);
-      result.push(~~(color[0] * 255));
-      result.push(~~(color[1] * 255));
-      result.push(~~(color[2] * 255));
+      result += encode(~~(color[0] * 255), ~~(color[1] * 255), ~~(color[2] * 255));
+      // result.push(~~(color[0] * 255));
+      // result.push(~~(color[1] * 255));
+      // result.push(~~(color[2] * 255));
     }
   }
   return result;
+}
+
+function encode(byte1, byte2, byte3) {
+  var bytes = new Uint8Array([byte1, byte2, byte3]);
+  var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+  var chunk = (bytes[0] << 16) | (bytes[1] << 8) | bytes[2]; 
+  // Use bitmasks to extract 6-bit segments from the triplet
+  var a = (chunk & 16515072) >> 18; // 16515072 = (2^6 - 1) << 18
+  var b = (chunk & 258048) >> 12;   // 258048   = (2^6 - 1) << 12
+  var c = (chunk & 4032) >> 6;      // 4032     = (2^6 - 1) << 6
+  var d = chunk & 63;               // 63       = 2^6 - 1
+  // Convert the raw binary segments to the appropriate ASCII encoding
+  return encodings[a] + encodings[b] + encodings[c] + encodings[d];
 }
 
 /* To run on crowdprocess */
@@ -662,7 +676,6 @@ function Run(d) {
   scene.job = d;
   return {
     id: d.id,
-    animation: d.animation,
     data: render(scene, d.animation)
   };    
 }
