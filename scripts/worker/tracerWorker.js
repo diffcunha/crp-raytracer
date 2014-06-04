@@ -2,14 +2,12 @@
 
 var RayTracer = require('crp-raytracer');
 
-var rayTracer;
-
 self.onmessage = function(msg) {
     var type = msg.data[0];
     var value = msg.data[1];
 
     if(type === 'process') {
-        rayTracer = new RayTracer({
+        var rayTracer = new RayTracer({
             split: value.tasks,
             input: value.input,
             animation: value.animation,
@@ -22,10 +20,6 @@ self.onmessage = function(msg) {
             self.postMessage(['resize', result.width, result.height, result.splitsPerFrame]);
         });
 
-        rayTracer.on('data', function(result) {
-            self.postMessage(['result', result]);
-        });
-
         rayTracer.on('end', function() {
             self.postMessage(['end']);
         });
@@ -34,6 +28,8 @@ self.onmessage = function(msg) {
             self.postMessage(['error', error]);
         });
 
-        rayTracer.run();
+        rayTracer.run(function(result) {
+            self.postMessage(['result', result]);
+        });
     }
 };
